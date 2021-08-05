@@ -209,4 +209,76 @@ Java_com_example_ndk_MainActivity_testStringType(JNIEnv *env, jobject thiz) {//t
 
 }
 
+//公用一块内存
+union Container{
+    int num;
+    char name[10];
+    double money;
+};
 
+//第一种
+/*struct Worker{// 定义一个结构体，相当于 java 的 class
+    char name[10];
+    int age;
+    double salary;
+};*/
+
+// 第二种方式，可以直接取名字 （常用）
+struct Worker{// 定义一个结构体，相当于 java 的 class
+    char name[10];
+    int age;
+    double salary;
+}jack; // 这种方式会有一个默认初始值
+
+struct WorkerSize{// 定义一个结构体，相当于 java 的 class
+    char name[18]; // 10
+    int age; // 4
+    double salary;// 8
+    // char name[10] 24 ，char name[18] 32
+    // 32 怎么来的？ 18 + 4 +8 = 30 ，32
+};
+
+//给WorkerSize 取得别名为 yu
+typedef WorkerSize  yu ;
+// 对结构体的指针取别名
+typedef WorkerSize* yu_;
+//结构体
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_MainActivity_testStructType(JNIEnv *env, jobject thiz) {
+    //union 公用体 使用同一块内存
+    union Container container;// 初始化 , 没有初始化的情况下，那么里面所有的属性都是没有初始值的
+    strcpy(container.name,"hello");
+    container.num = 10;
+    LOGE("%s , %d",container.name,container.num);
+
+    LOGE("%d , %lf",jack.age,jack.salary);
+
+/*    struct Worker worker = {"Darren",23};
+    Worker* worker_p = &worker;
+    // 通过结构体指针去操作数据
+    // worker.age = 24;
+    worker_p->age = 24;// 结构体操作的另外一种方式，一般这种比较常用
+    strcpy(worker_p->name,"Jack");
+    LOGE("name = %s, age = %d", worker_p->name, worker_p->age);*/
+
+    //结构体指针
+/*    Worker* worker = (Worker*)malloc(sizeof(Worker));
+    worker->age = 24;
+    strcpy(worker->name, "Jack");
+    LOGE("name = %s, age = %d", worker->name, worker->age);
+    // 释放
+    if (worker){
+        free(worker);
+        worker = NULL;
+    }*/
+    yu a;
+
+    int size = sizeof(WorkerSize);// 16 字节
+    // 计算的规则：
+    // 1. 按照最大的字节去计算
+    // 2. 算得时候只会按照基本数据类型去算
+    // 3. 首先会把所有字节数加起来，是否能够整除最大属性的字节数，如果不够为网上累加，一直加到能整除位置
+    LOGE("size = %d", size);
+
+}
