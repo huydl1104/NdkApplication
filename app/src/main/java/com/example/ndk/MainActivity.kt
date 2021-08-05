@@ -11,6 +11,8 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         findViewById<TextView>(R.id.sample_text).text = stringFromJNI()
+
+        testStringType()
     }
 
     /**
@@ -18,6 +20,8 @@ class MainActivity : AppCompatActivity() {
      * which is packaged with this application.
      */
     external fun stringFromJNI(): String
+
+    external fun testStringType()
 
     companion object {
         // Used to load the 'native-lib' library on application startup.
