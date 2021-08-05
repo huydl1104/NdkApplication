@@ -3,6 +3,9 @@
 #include <android/log.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
+
+
 //定义TAG之后，我们可以在LogCat通过TAG过滤出NDK打印的日志
 #define TAG "JNITEST"
 // 定义info信息
@@ -58,6 +61,46 @@ void lower(char *dest,char *source){
     *dest = '\0';
 }
 
+void callback(int num){
+    LOGE("callback --> %d",num);
+}
+
+//函数指针
+void operator1(void (*method)(int) ,int num){
+    method(num);
+}
+
+//动态开辟内存
+void dynamicMemory(int num){
+    // int arr[num]; 静态开辟，内存大小不能改变
+    int* arr = (int*)malloc(sizeof(int)*num);
+    int i = 0;
+    for (; i < num; i++){
+        arr[i] = i;// arr[i] = *(arr+i)
+    }
+    int new_num = 5;
+    int* new_arr = (int*)realloc(arr, sizeof(int)*(num+new_num));
+    if (new_arr){// = if(new_arr != NULL)
+        for (; i < (num + new_num); i++){
+            new_arr[i] = i;// arr[i] = *(arr+i)
+        }
+    }
+
+    int j = 0;
+    for (; j < num + new_num; j++){
+        LOGE("新开辟内存的指针：%d ", *new_arr+j);
+    }
+    if (new_arr){
+        // 如果成功了，只要释放新的地址就行
+        free(new_arr);
+        new_arr = NULL;
+    }else{
+        // 如果没有成功，释放原来的内存
+        free(arr);
+    }
+}
+
+
 
 //native的方法的第二个参数：若是静态方法，对应的是jclass，静态方法不依赖于对应的实例，依赖于类
 //非静态方法对应的是jobject 类的对象
@@ -70,7 +113,8 @@ Java_com_example_ndk_MainActivity_testStringType(JNIEnv *env, jobject thiz) {//t
     LOGE("double 数据类型所占的字节数：%lu  ", sizeof(double));// 8
     LOGE("char 数据类型所占的字节数：%lu  ", sizeof(char));// 1
     LOGE("--------- c end   -----------");
-    //字符串数组
+    dynamicMemory(4);
+/*    //字符串数组
     char arr[] = {'h','e','l','l','o','-','y','d','l'};
     char *str1 = "yudl3";//这种字符串不能修改
     LOGE("%s",arr);
@@ -115,7 +159,7 @@ Java_com_example_ndk_MainActivity_testStringType(JNIEnv *env, jobject thiz) {//t
     }
     //字符串的拼接、截取、大小写转换
     // strcpy(); copy进来
-    char* str5 = "yudl";
+    char *str5 = "yudl";
     char *str6 = " is";
     //strlen 计算字符串的长度
     int len = strlen(str5);// cpy[len] android studio 是可以的
@@ -142,6 +186,26 @@ Java_com_example_ndk_MainActivity_testStringType(JNIEnv *env, jobject thiz) {//t
     char dest[20];
     lower(dest,name);
     LOGE("%s",dest);
+
+
+    //数组和指针
+    int arr10[] = {1,2,3,4,5};
+    // for循环在 c 和 C++ 中的正确写法
+//    int j = 0;
+//    for (; j < 4; j++){
+//        LOGE("%d ", arr10[j]);
+//    }
+    //创建一个指针 指向 数组的首地址
+    int *pointer = arr10;
+    LOGE("%d",*pointer);
+//    pointer++;
+    int j = 0;
+    for (; j < 4;j++){
+        LOGE("位置%d的值是：%d ", j, *(pointer+i));
+    }
+
+    //函数指针
+    operator1(callback,12);*/
 
 }
 
