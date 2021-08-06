@@ -129,3 +129,51 @@ Java_com_example_ndk_jniUtils_Jni_testStruct(JNIEnv *env, jobject thiz) {
 
 
 }
+
+//------------------------------------------------------------------------
+
+//类的继承
+//1、公有继承（public）：当一个类派生自公有基类时，基类的公有成员也是派生类的公有成员，基类的保护成员也是派生类的保护成员，
+// 基类的私有成员不能直接被派生类访问，但是可以通过调用基类的公有和保护成员来访问。
+//2、保护继承（protected）： 当一个类派生自保护基类时，基类的公有和保护成员将成为派生类的保护成员。
+//3、私有继承（private）：当一个类派生自私有基类时，基类的公有和保护成员将成为派生类的私有成员。
+
+// 基类 Shape
+class Shape{
+    public:
+        void setWidth(int w)
+        {
+            width = w;
+        }
+        void setHeight(int h)
+        {
+            height = h;
+        }
+    protected:
+        int width;
+        int height;
+};
+
+// 基类 PaintCost
+class PaintCost{
+    public:
+        int getCost(int area){
+            return area * 70;
+        }
+};
+
+// 派生类
+class Rectangle: public Shape, public PaintCost{
+public:
+    int getArea(){
+        return (width * height);
+    }
+};
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_jniUtils_Jni_testExtendsClass(JNIEnv *env, jobject thiz) {
+
+
+}

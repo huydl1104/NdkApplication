@@ -12,4 +12,6 @@ public class Jni {
     }
 
     public native void testStruct();
+
+    public native void testExtendsClass();
 }
