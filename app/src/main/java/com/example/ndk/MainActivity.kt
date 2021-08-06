@@ -1,7 +1,9 @@
 package com.example.ndk
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
@@ -13,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.sample_text).text = stringFromJNI()
 
 //        testStringType()
-        testStructType()
+//        testStructType()
     }
 
     /**
@@ -26,7 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     external fun testStructType()
 
+    fun enterNativeTest(view: View) {
+        startActivity(Intent(this,NativeTestActivity::class.java))
 
+    }
 
     companion object {
         // Used to load the 'native-lib' library on application startup.
@@ -34,4 +39,6 @@ class MainActivity : AppCompatActivity() {
             System.loadLibrary("native-lib")
         }
     }
+
+
 }
