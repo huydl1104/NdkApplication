@@ -138,42 +138,72 @@ Java_com_example_ndk_jniUtils_Jni_testStruct(JNIEnv *env, jobject thiz) {
 //2、保护继承（protected）： 当一个类派生自保护基类时，基类的公有和保护成员将成为派生类的保护成员。
 //3、私有继承（private）：当一个类派生自私有基类时，基类的公有和保护成员将成为派生类的私有成员。
 
-// 基类 Shape
-class Shape{
+class BaseA{
     public:
-        void setWidth(int w)
-        {
-            width = w;
-        }
-        void setHeight(int h)
-        {
-            height = h;
-        }
+        BaseA(int a, int b);
+        ~BaseA();
+    public:
+        void show();
     protected:
-        int width;
-        int height;
+        int m_a;
+        int m_b;
 };
-
-// 基类 PaintCost
-class PaintCost{
+BaseA::BaseA(int a, int b): m_a(a), m_b(b){
+    cout<<"BaseA constructor"<<endl;
+}
+BaseA::~BaseA(){
+    cout<<"BaseA destructor"<<endl;
+}
+void BaseA::show(){
+    cout<<"m_a = "<<m_a<<endl;
+    cout<<"m_b = "<<m_b<<endl;
+}
+//基类
+class BaseB{
     public:
-        int getCost(int area){
-            return area * 70;
-        }
+        BaseB(int c, int d);
+        ~BaseB();
+        void show();
+    protected:
+        int m_c;
+        int m_d;
 };
-
-// 派生类
-class Rectangle: public Shape, public PaintCost{
-public:
-    int getArea(){
-        return (width * height);
-    }
+BaseB::BaseB(int c, int d): m_c(c), m_d(d){
+    cout<<"BaseB constructor"<<endl;
+}
+BaseB::~BaseB(){
+    cout<<"BaseB destructor"<<endl;
+}
+void BaseB::show(){
+    cout<<"m_c = "<<m_c<<endl;
+    cout<<"m_d = "<<m_d<<endl;
+}
+//派生类
+class Derived: public BaseA, public BaseB{
+    public:
+        Derived(int a, int b, int c, int d, int e);
+        ~Derived();
+    public:
+        void display();
+    private:
+        int m_e;
 };
-
+Derived::Derived(int a, int b, int c, int d, int e): BaseA(a, b), BaseB(c, d), m_e(e){
+    cout<<"Derived constructor"<<endl;
+}
+Derived::~Derived(){
+    cout<<"Derived destructor"<<endl;
+}
+void Derived::display(){
+    BaseA::show();  //调用BaseA类的show()函数
+    BaseB::show();  //调用BaseB类的show()函数
+    cout<<"m_e = "<<m_e<<endl;
+}
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_jniUtils_Jni_testExtendsClass(JNIEnv *env, jobject thiz) {
-
+    Derived obj(1, 2, 3, 4, 5);
+    obj.display();
 
 }
