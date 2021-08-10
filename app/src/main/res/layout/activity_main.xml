@@ -5,22 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MusicActivity">
 
-    <TextView
-        android:layout_marginBottom="30dp"
-        android:gravity="center"
-        android:id="@+id/sample_text"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:text="Hello World!" />
-
-    <Button
-        android:layout_marginBottom="30dp"
-        android:gravity="center"
-        android:id="@+id/button1"
-        android:onClick="enterNativeTest"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="点击进入mative-test" />
 </LinearLayout>

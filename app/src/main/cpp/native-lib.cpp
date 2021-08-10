@@ -18,7 +18,7 @@
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_example_ndk_MainActivity_stringFromJNI(
+Java_com_example_ndk_MusicActivity_stringFromJNI(
         JNIEnv* env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
@@ -107,7 +107,7 @@ void dynamicMemory(int num){
 //非静态方法对应的是jobject 类的对象
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_ndk_MainActivity_testStringType(JNIEnv *env, jobject thiz) {//thiz传入的是native所依赖的类的对象，因为是非静态的方法
+Java_com_example_ndk_MusicActivity_testStringType(JNIEnv *env, jobject thiz) {//thiz传入的是native所依赖的类的对象，因为是非静态的方法
 
 //    LOGE("--------- c start -----------");
 //    LOGE("int 数据类型所占的字节数：%lu ",sizeof(int));// 4
@@ -246,7 +246,7 @@ typedef WorkerSize* yu_;
 //结构体
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_ndk_MainActivity_testStructType(JNIEnv *env, jobject thiz) {
+Java_com_example_ndk_MusicActivity_testStructType(JNIEnv *env, jobject thiz) {
     //union 公用体 使用同一块内存
     union Container container;// 初始化 , 没有初始化的情况下，那么里面所有的属性都是没有初始值的
     strcpy(container.name,"hello");
