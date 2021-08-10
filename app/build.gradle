@@ -18,10 +18,22 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags ""
-                //指定需要编译的cpu架构
-                abiFilters "armeabi-v7a"
             }
         }
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+        //2、手动添加
+        packagingOptions {
+            pickFirst 'lib/arm64-v8a/libswscale-4.so'
+            pickFirst 'lib/arm64-v8a/libavcodec-57.so'
+            pickFirst 'lib/arm64-v8a/libavutil-55.so'
+            pickFirst 'lib/arm64-v8a/libavformat-57.so'
+            pickFirst 'lib/arm64-v8a/libavfilter-6.so'
+            pickFirst 'lib/arm64-v8a/libswresample-2.so'
+            pickFirst 'lib/arm64-v8a/libavdevice-57.so'
+        }
+
     }
 
     buildTypes {
