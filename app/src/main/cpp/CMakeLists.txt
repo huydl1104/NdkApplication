@@ -89,12 +89,19 @@ target_link_libraries(
         native-lib
         music-player
         # 4. 连接 FFmpeg 相关的库
+        # 4.1、#核心工具库，最基础模块之一，其他模块都会依赖该库做一些基本的音视频处理操作
         avutil
+        # 4.2、用于音频重采样，可以对数字音频进行声道数、数据格式、采样率等多种基本信息的转换
         swresample
+        # 4.3、编解码库，可以将第三方的codec以插件的形式添加进来
         avcodec
+        # 4.4、音视频的滤镜库，该模块包含了音频特效和视频特效的处理
         avfilter
+        # 4.5、该模块用于图像格式转换，可以将 YUV 的数据转换为RGB的数据
         swscale
+        # 4.6、文件格式和协议库
         avformat
+        # 4.7、输入输出设备库
         avdevice
 
         # Links the target library to the log library
