@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     external fun testStructType()
 
     fun enterNativeTest(view: View) {
-        startActivity(Intent(this,NativeTestActivity::class.java))
+//        startActivity(Intent(this,NativeTestActivity::class.java))
 
     }
 

@@ -18,6 +18,8 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags ""
+                //指定需要编译的cpu架构
+                abiFilters "armeabi-v7a"
             }
         }
     }
