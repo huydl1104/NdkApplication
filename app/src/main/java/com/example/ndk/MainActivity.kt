@@ -1,5 +1,6 @@
 package com.example.ndk
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -7,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.ndk.activity.NativeMediaPlayerActivity
 import com.example.ndk.adapter.MainAdapter
 import com.example.ndk.adapter.OnItemCLickListener
 import com.example.ndk.util.CommonUtils
@@ -20,7 +21,7 @@ open class MainActivity : AppCompatActivity() {
     private val PERMISSIONS_CODE = 1
 
     private val dataList = arrayListOf(
-        "ffmpeg_version_info"
+        "ffmpeg_version_info", "NativeMediaPlayerActivity"
     )
 
     private val listener = object: OnItemCLickListener {
@@ -29,12 +30,8 @@ open class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handlerClickEvent(case: String) {
-        when(case){
-            dataList[0]->{
-                showDialog()
-            }
-        }
+    private fun <T>  startActivity(className: Class<T>) {
+        startActivity(Intent(this@MainActivity, className))
     }
 
     private val mainAdapter = MainAdapter(this, dataList).apply {
@@ -46,7 +43,7 @@ open class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         recyclerView.run {
-            layoutManager = GridLayoutManager(this@MainActivity,3)
+            layoutManager = GridLayoutManager(this@MainActivity, 3)
             adapter = mainAdapter
         }
 
@@ -55,12 +52,8 @@ open class MainActivity : AppCompatActivity() {
     private fun showDialog(){
         val builder = AlertDialog.Builder(this)
         builder.setTitle("ffmpeg的版本信息")
-        builder.setMessage(FFJni.getFFVersion())
+        builder.setMessage(FFJniMediaPlayer.getFFVersion())
         builder.show()
-    }
-
-    private fun startActivity(){
-
     }
 
 
@@ -90,11 +83,23 @@ open class MainActivity : AppCompatActivity() {
     ) {
         if (requestCode == PERMISSIONS_CODE) {
             if (!hasPermissionsGranted(REQUEST_PERMISSIONS)) {
-                Toast.makeText(this, "We need the permission: WRITE_EXTERNAL_STORAGE", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "We need the permission: WRITE_EXTERNAL_STORAGE",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
 
     }
+
+    private fun handlerClickEvent(case: String) {
+        when(case){
+            dataList[0] -> { showDialog() }
+            dataList[1] -> { startActivity(NativeMediaPlayerActivity::class.java) }
+        }
+    }
+
 }

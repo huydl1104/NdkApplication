@@ -6,4 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".activity.NativeMediaPlayerActivity">
 
+    <RelativeLayout
+        android:id="@+id/surface_root"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <com.example.ndk.view.MySurfaceView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:id="@+id/surface_view"/>
+    </RelativeLayout>
+
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

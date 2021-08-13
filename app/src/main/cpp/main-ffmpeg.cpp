@@ -1,11 +1,11 @@
 //
-// Created by qaz on 8/10/21.
+// Created by ydl on 8/10/21.
 //
 #include <jni.h>
 #include <string>
 #include <android/log.h>
 #include <stdlib.h>
-#include <libavutil/ffversion.h>
+
 // 在 c++ 中采用 c 的这种编译方式
 extern "C" {
 #include "libavformat/avformat.h"
@@ -17,7 +17,7 @@ extern "C" {
 using namespace std;
 
 extern "C"
-JNIEXPORT jstring JNICALL Java_com_example_ndk_FFJni_nativeFFVersion(JNIEnv *env, jclass thiz) {
+JNIEXPORT jstring JNICALL Java_com_example_ndk_FFJniMediaPlayer_nativeFFVersion(JNIEnv *env, jclass thiz) {
     char strBuffer[1024 * 4] = {0};
     strcat(strBuffer, "libavcodec : ");
     strcat(strBuffer, AV_STRINGIFY(LIBAVCODEC_VERSION));
@@ -35,11 +35,15 @@ JNIEXPORT jstring JNICALL Java_com_example_ndk_FFJni_nativeFFVersion(JNIEnv *env
     strcat(strBuffer, avcodec_configuration());
     strcat(strBuffer, "\navcodec_license : ");
     strcat(strBuffer, avcodec_license());
-//    LOGCATE("GetFFmpegVersion\n%s", strBuffer);
-
-    //ASanTestCase::MainTest();
-
     return env->NewStringUTF(strBuffer);
 
 }
+extern "C"
+JNIEXPORT jlong JNICALL Java_com_example_ndk_FFJniMediaPlayer_native_1Init(JNIEnv *env, jobject thiz, jstring jurl,
+        jint render_type, jobject surface) {
+    //将jstring 转换为 char*
+    const char *url = env->GetStringUTFChars(jurl, NULL);
+
+}
+
 

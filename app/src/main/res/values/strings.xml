@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NdkApplication</string>
+    <string name="main_name">主界面</string>
+    <string name="NativeMediaPlayer">NativeMediaPlayer</string>
 </resources>
