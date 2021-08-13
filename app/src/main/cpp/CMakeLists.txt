@@ -89,11 +89,17 @@ add_library( # Sets the name of the library.
 #        ${jnilibs}/${ANDROID_ABI}/libavformat.so)
 
 set(third-party-libs
+        #文件格式和协议库
         avformat
+        #编解码库，可以将第三方的codec以插件的形式添加进来
         avcodec
+        #音视频的滤镜库，该模块包含了音频特效和视频特效的处理
         avfilter
+        #用于音频重采样，可以对数字音频进行声道数、数据格式、采样率等多种基本信息的转换
         swresample
+        #该模块用于图像格式转换，可以将 YUV 的数据转换为RGB的数据
         swscale
+        #核心工具库，最基础模块之一，其他模块都会依赖该库做一些基本的音视频处理操作
         avutil
         fdk-aac
         x264
