@@ -15,6 +15,7 @@ extern "C" {
 };
 
 #include <mutex>
+#include <thread>
 #include "Decoder.h"
 
 #define MAX_PATH   2048

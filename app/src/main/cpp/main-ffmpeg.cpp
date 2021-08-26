@@ -5,6 +5,7 @@
 #include <string>
 #include <android/log.h>
 #include <stdlib.h>
+#include <thread>
 
 // 在 c++ 中采用 c 的这种编译方式
 extern "C" {
@@ -12,6 +13,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libswresample/swresample.h"
 #include "libavutil/avutil.h"
+
 }
 #define TAG "YDL"
 using namespace std;
@@ -42,8 +44,10 @@ extern "C"
 JNIEXPORT jlong JNICALL Java_com_example_ndk_FFJniMediaPlayer_native_1Init(JNIEnv *env, jobject thiz, jstring jurl,
         jint render_type, jobject surface) {
     //将jstring 转换为 char*
-    const char *url = env->GetStringUTFChars(jurl, NULL);
+//    const char *url = env->GetStringUTFChars(jurl, NULL);
 
+
+    return 0;
 }
 
 
