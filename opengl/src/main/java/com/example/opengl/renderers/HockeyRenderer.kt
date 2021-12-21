@@ -1,8 +1,9 @@
 package com.example.opengl.renderers
 
 import android.content.Context
-import android.opengl.GLES20
+import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.example.opengl.ShaderHelper
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -115,24 +116,32 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         val fragShader = ShaderHelper.compileFragmentShader(simpleFragmentShader)
         //放入单个程序里里面
         val linkProgram = ShaderHelper.linkProgram(vertexShader, fragShader)
+        if (!ShaderHelper.validateProgram(linkProgram)){
+            Log.e("YUDL","validateProgram fail ->${glGetProgramInfoLog(linkProgram)}" )
+            return
+        }
+        //使用创建好的程序
+        glUseProgram(linkProgram)
+
+
+
         //获得uniform u_color的位置，以便在绘画的时候设置颜色
-        mColorLocation = GLES20.glGetUniformLocation(linkProgram, U_COLOR)
-        //获取属性的位置
-        aPositionLocation = GLES20.glGetAttribLocation(linkProgram,A_POSITION)
+        mColorLocation = glGetUniformLocation(linkProgram, U_COLOR)
+        //获取顶点属性的位置
+        aPositionLocation = glGetAttribLocation(linkProgram,A_POSITION)
+        //保证读取数据一定是从0开始读取
         vertexData?.position(0)
         /**
+         * 配置 顶点数据
          * 参数：
-         *   int indx：属性位置
-         *   int size：每个属性的数据计数
-         *   int type, 数据类型
+         *   第一个参数：属性位置
+         *   第二个参数：每个属性的数据计数
+         *   第三个参数：数据类型
          */
-        GLES20.glVertexAttribPointer(aPositionLocation,
-                POSITION_COMPONENT_COUNT,GLES20.GL_FLOAT,false,0,vertexData)
+        glVertexAttribPointer(aPositionLocation,
+                POSITION_COMPONENT_COUNT,GL_FLOAT,false,0,vertexData)
         //告诉opengl 从vertexData 中找到a_position的数据
-        GLES20.glEnableVertexAttribArray(aPositionLocation)
-
-
-
+        glEnableVertexAttribArray(aPositionLocation)
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
@@ -140,23 +149,24 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10) {
+        //清空到默认配置的颜色
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
         // uniform 是四个分量的值。
-        GLES20.glUniform4f(mColorLocation,1.0f,1.0f,1.0f,1.0f)
+        glUniform4f(mColorLocation,1.0f,1.0f,1.0f,1.0f)
         //绘制三角形
         //first：绘制三角形的 开始 position 。
-        //count：个数
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,6)
+        //count：顶点个数
+        glDrawArrays(GL_TRIANGLES,0,6)
 
         //绘制直线
-        GLES20.glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
-        GLES20.glDrawArrays(GLES20.GL_LINES,6,2)
+        glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
+        glDrawArrays(GL_LINES,6,2)
 
         //绘制两个木追
-        GLES20.glUniform4f(mColorLocation,0.0f,0.0f,1.0f,1.0f)
-        GLES20.glDrawArrays(GLES20.GL_POINTS,8,1)
+        glUniform4f(mColorLocation,0.0f,0.0f,1.0f,1.0f)
+        glDrawArrays(GL_POINTS,8,1)
 
-        GLES20.glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
-        GLES20.glDrawArrays(GLES20.GL_POINTS,9,1)
+        glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
+        glDrawArrays(GL_POINTS,9,1)
     }
 }
