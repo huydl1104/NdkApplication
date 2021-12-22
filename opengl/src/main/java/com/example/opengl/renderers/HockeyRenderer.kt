@@ -44,7 +44,7 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         9f,0f
     )
     //两个三角形的顶点数据
-    val tableVerticesTriangles = floatArrayOf(
+/*    val tableVerticesTriangles = floatArrayOf(
         //triangles 1
         0f,0f,
         9f,14f,
@@ -59,6 +59,22 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         //mallets
         4.5f,2f,
         4.5f,12f
+    )*/
+    val tableVerticesTriangles = floatArrayOf(
+        -0.5f,-0.5f,
+        0.5f,0.5f,
+        -0.5f,0.5f,
+
+        -0.5f,-0.5f,
+        0.5f,-0.5f,
+        0.5f,0.5f,
+
+        -0.5f,0f,
+        0.5f,0f,
+
+        0f,-0.25f,
+        0f,0.25f,
+
     )
     //使用float类型 占四个字节
     val BYTES_PER_FLOAT = 4
@@ -74,7 +90,8 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         """
             attribute vec4 a_Position;
             void main(){
-                gl_Position = a_Position
+                gl_Position = a_Position;
+                gl_PointSize = 10.0;
             }
         """
 
@@ -95,9 +112,9 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
                 gl_FragColor = u_Color;
             } 
         """
-    private val U_COLOR = "uColor"
+    private val U_COLOR = "u_Color"
     private var mColorLocation = 0
-    private val A_POSITION = "a_position"
+    private val A_POSITION = "a_Position"
     private var aPositionLocation = 0
 
     init {
@@ -165,7 +182,6 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         //绘制两个木追
         glUniform4f(mColorLocation,0.0f,0.0f,1.0f,1.0f)
         glDrawArrays(GL_POINTS,8,1)
-
         glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
         glDrawArrays(GL_POINTS,9,1)
     }

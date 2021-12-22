@@ -75,6 +75,7 @@ object ShaderHelper {
     private fun isLinkProgram(programObjectId: Int): Boolean {
         val state = IntArray(1)
         glGetProgramiv(programObjectId,GL_LINK_STATUS,state,0)
+        Log.e("YUDL","compile program isLinkProgram  ->${state[0]}" )
         return state[0] != 0
     }
 
