@@ -34,7 +34,7 @@ import javax.microedition.khronos.opengles.GL10
  *
  */
 class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
-    val POSITION_COMPONENT_COUNT = 2 //定义一个定点都有 两个 分量 x，y
+
 
     //采用浮点数结构定义顶点数据
     val tableVertices = floatArrayOf(
@@ -61,37 +61,38 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         4.5f,12f
     )*/
     val tableVerticesTriangles = floatArrayOf(
-        0f,0f,
-        -0.5f,-0.5f,
-        0.5f,-0.5f,
+        0f,0f,1f,1f,1f,
+        -0.5f,-0.5f,0.7f,0.7f,0.7f,
+        0.5f,-0.5f,0.7f,0.7f,0.7f,
 
-        0.5f,0.5f,
-        -0.5f,0.5f,
-        -0.5f,-0.5f,
+        0.5f,0.5f,0.7f,0.7f,0.7f,
+        -0.5f,0.5f,0.7f,0.7f,0.7f,
+        -0.5f,-0.5f,0.7f,0.7f,0.7f,
 
-        -0.5f,0f,
-        0.5f,0f,
+        -0.5f,0f,1f,0f,0f,
+        0.5f,0f,1f,0f,0f,
 
-        0f,-0.25f,
-        0f,0.25f,
+        0f,-0.25f,0f,0f,1f,
+        0f,0.25f,1f,0f,0f,
 
     )
-    //使用float类型 占四个字节
-    val BYTES_PER_FLOAT = 4
-    private var vertexData: FloatBuffer?= null
 
     /**
      * 顶点着色器
      * 1、每个单一的顶点被调用，顶点着色器就会被调用一次，接着会在a_Position属性里面接受当前顶点的位置，属性被定义为 vec4 类型
      * 2、关键字 attribute 把这些属性放进着色器里面。
      * 3、main作为着色器的入口，将前面定义过的位置 a_Position复制到gl_Position中，gl_Position代表着色器的最终位置
+     * 4、varying是特殊变量，将接受到的值混合后发给片段着色器
      */
     val simpleVertexShader:String =
         """
             attribute vec4 a_Position;
+            attribute vec4 a_Color;
+            varying vec4 v_Color;
             void main(){
+                v_Color = a_Color;
                 gl_Position = a_Position;
-                gl_PointSize = 10.0;
+                gl_PointSize = 20.0;
             }
         """
 
@@ -107,15 +108,22 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
     val simpleFragmentShader:String =
         """
             precision mediump float;
-            uniform vec4 u_Color;
+            varying vec4 v_Color;
             void main(){
-                gl_FragColor = u_Color;
+                gl_FragColor = v_Color;
             } 
         """
-    private val U_COLOR = "u_Color"
-    private var mColorLocation = 0
+    private val A_COLOR = "a_Color"
+    private var aColorLocation = 0
     private val A_POSITION = "a_Position"
     private var aPositionLocation = 0
+    private val POSITION_COMPONENT_COUNT = 2 //定义一个定点都有 两个 分量 x，y
+    private val COLOR_COMPONENT_COUNT = 3 //color分量  r,g,b
+    //使用float类型 占四个字节
+    private val BYTES_PER_FLOAT = 4
+    private var vertexData: FloatBuffer?= null
+    private val STRIDE = (POSITION_COMPONENT_COUNT+COLOR_COMPONENT_COUNT)*BYTES_PER_FLOAT
+
 
     init {
         /**
@@ -143,22 +151,18 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
 
 
         //获得uniform u_color的位置，以便在绘画的时候设置颜色
-        mColorLocation = glGetUniformLocation(linkProgram, U_COLOR)
+        aColorLocation = glGetAttribLocation(linkProgram, A_COLOR)
         //获取顶点属性的位置
         aPositionLocation = glGetAttribLocation(linkProgram,A_POSITION)
         //保证读取数据一定是从0开始读取
         vertexData?.position(0)
-        /**
-         * 配置 顶点数据
-         * 参数：
-         *   第一个参数：属性位置
-         *   第二个参数：每个属性的数据计数
-         *   第三个参数：数据类型
-         */
-        glVertexAttribPointer(aPositionLocation,
-                POSITION_COMPONENT_COUNT,GL_FLOAT,false,0,vertexData)
+        glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT,GL_FLOAT,false,STRIDE,vertexData)
         //告诉opengl 从vertexData 中找到a_position的数据
         glEnableVertexAttribArray(aPositionLocation)
+
+        vertexData?.position(POSITION_COMPONENT_COUNT)
+        glVertexAttribPointer(aColorLocation,COLOR_COMPONENT_COUNT, GL_FLOAT,false,STRIDE,vertexData)
+        glEnableVertexAttribArray(aColorLocation)
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
@@ -168,21 +172,16 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
     override fun onDrawFrame(gl: GL10) {
         //清空到默认配置的颜色
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
-        // uniform 是四个分量的值。
-        glUniform4f(mColorLocation,1.0f,1.0f,1.0f,1.0f)
         //绘制三角形
         //first：绘制三角形的 开始 position 。
         //count：顶点个数
         glDrawArrays(GL_TRIANGLE_FAN,0,6)
 
         //绘制直线
-        glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
         glDrawArrays(GL_LINES,6,2)
 
         //绘制两个木追
-        glUniform4f(mColorLocation,0.0f,0.0f,1.0f,1.0f)
         glDrawArrays(GL_POINTS,8,1)
-        glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
         glDrawArrays(GL_POINTS,9,1)
     }
 }
