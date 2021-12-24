@@ -3,6 +3,7 @@ package com.example.opengl.renderers
 import android.content.Context
 import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView
+import android.opengl.Matrix
 import android.util.Log
 import com.example.opengl.ShaderHelper
 import java.nio.ByteBuffer
@@ -62,18 +63,18 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
     )*/
     val tableVerticesTriangles = floatArrayOf(
         0f,0f,1f,1f,1f,
-        -0.5f,-0.5f,0.7f,0.7f,0.7f,
-        0.5f,-0.5f,0.7f,0.7f,0.7f,
+        -0.5f,-0.8f,0.7f,0.7f,0.7f,
+        0.5f,-0.8f,0.7f,0.7f,0.7f,
 
-        0.5f,0.5f,0.7f,0.7f,0.7f,
-        -0.5f,0.5f,0.7f,0.7f,0.7f,
-        -0.5f,-0.5f,0.7f,0.7f,0.7f,
+        0.5f,0.8f,0.7f,0.7f,0.7f,
+        -0.5f,0.8f,0.7f,0.7f,0.7f,
+        -0.5f,-0.8f,0.7f,0.7f,0.7f,
 
         -0.5f,0f,1f,0f,0f,
         0.5f,0f,1f,0f,0f,
 
-        0f,-0.25f,0f,0f,1f,
-        0f,0.25f,1f,0f,0f,
+        0f,-0.4f,0f,0f,1f,
+        0f,0.4f,1f,0f,0f,
 
     )
 
@@ -86,12 +87,13 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
      */
     val simpleVertexShader:String =
         """
+            uniform mat4 u_Matrix;
             attribute vec4 a_Position;
             attribute vec4 a_Color;
             varying vec4 v_Color;
             void main(){
                 v_Color = a_Color;
-                gl_Position = a_Position;
+                gl_Position = u_Matrix * a_Position;
                 gl_PointSize = 20.0;
             }
         """
@@ -114,8 +116,9 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
             } 
         """
     private val A_COLOR = "a_Color"
-    private var aColorLocation = 0
     private val A_POSITION = "a_Position"
+    private val U_MATRIX = "u_Matrix"
+    private var aColorLocation = 0
     private var aPositionLocation = 0
     private val POSITION_COMPONENT_COUNT = 2 //定义一个定点都有 两个 分量 x，y
     private val COLOR_COMPONENT_COUNT = 3 //color分量  r,g,b
@@ -123,7 +126,10 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
     private val BYTES_PER_FLOAT = 4
     private var vertexData: FloatBuffer?= null
     private val STRIDE = (POSITION_COMPONENT_COUNT+COLOR_COMPONENT_COUNT)*BYTES_PER_FLOAT
-
+    //用于存储矩阵的顶点数据位置
+    private val projectionMatrix = FloatArray(16)
+    //保存uniform位置
+    private var uMatrixLocation = 0
 
     init {
         /**
@@ -148,8 +154,6 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         //使用创建好的程序
         glUseProgram(linkProgram)
 
-
-
         //获得uniform u_color的位置，以便在绘画的时候设置颜色
         aColorLocation = glGetAttribLocation(linkProgram, A_COLOR)
         //获取顶点属性的位置
@@ -163,18 +167,30 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         vertexData?.position(POSITION_COMPONENT_COUNT)
         glVertexAttribPointer(aColorLocation,COLOR_COMPONENT_COUNT, GL_FLOAT,false,STRIDE,vertexData)
         glEnableVertexAttribArray(aColorLocation)
+
+        uMatrixLocation = glGetUniformLocation(linkProgram,U_MATRIX)
+
     }
 
+    /**
+     * 正交投影 解决横竖屏切换拉伸问题
+     */
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
+        val radio = if (width > height) width.toFloat()/height.toFloat() else height.toFloat()/width.toFloat()
+        Log.e("YUDL","onSurfaceChanged  radio ->$radio , width ->$width ,height ->$height")
+        if (width > height){//横屏
+            Matrix.orthoM(projectionMatrix,0,-radio,radio,-1f,1f,-1f,1f)
+        }else{
+            Matrix.orthoM(projectionMatrix,0,-1f,1f,-radio,radio,-1f,1f)
+        }
         gl.glViewport(0,0,width, height)
     }
 
     override fun onDrawFrame(gl: GL10) {
         //清空到默认配置的颜色
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
+        glUniformMatrix4fv(uMatrixLocation,1,false,projectionMatrix,0)
         //绘制三角形
-        //first：绘制三角形的 开始 position 。
-        //count：顶点个数
         glDrawArrays(GL_TRIANGLE_FAN,0,6)
 
         //绘制直线
