@@ -61,13 +61,13 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         4.5f,12f
     )*/
     val tableVerticesTriangles = floatArrayOf(
-        -0.5f,-0.5f,
-        0.5f,0.5f,
-        -0.5f,0.5f,
-
+        0f,0f,
         -0.5f,-0.5f,
         0.5f,-0.5f,
+
         0.5f,0.5f,
+        -0.5f,0.5f,
+        -0.5f,-0.5f,
 
         -0.5f,0f,
         0.5f,0f,
@@ -173,7 +173,7 @@ class HockeyRenderer(val mContext: Context): GLSurfaceView.Renderer {
         //绘制三角形
         //first：绘制三角形的 开始 position 。
         //count：顶点个数
-        glDrawArrays(GL_TRIANGLES,0,6)
+        glDrawArrays(GL_TRIANGLE_FAN,0,6)
 
         //绘制直线
         glUniform4f(mColorLocation,1.0f,0.0f,0.0f,1.0f)
